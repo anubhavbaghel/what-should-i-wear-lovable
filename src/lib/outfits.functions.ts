@@ -243,3 +243,33 @@ export const updateMannequinPreset = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+/* ============ Onboarding: save name + preset and mark complete ============ */
+export const completeOnboarding = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z
+      .object({
+        displayName: z.string().min(1).max(60).optional(),
+        preset: z.enum(MANNEQUIN_PRESETS),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const patch: {
+      mannequin_preset: typeof data.preset;
+      onboarded_at: string;
+      display_name?: string;
+    } = {
+      mannequin_preset: data.preset,
+      onboarded_at: new Date().toISOString(),
+    };
+    if (data.displayName) patch.display_name = data.displayName.trim();
+    const { error } = await supabase
+      .from("profiles")
+      .update(patch)
+      .eq("id", userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });

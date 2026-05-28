@@ -43,20 +43,20 @@ function ItemPage() {
   }
 
   return (
-    <div className="px-5 pt-10 pb-6">
+    <div className="px-5 pt-10 pb-32">
       <button
         onClick={() => navigate({ to: "/closet" })}
-        className="-ml-2 inline-flex items-center gap-1 text-sm text-muted-foreground"
+        className="-ml-2 inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-ink"
       >
         <ChevronLeft className="h-4 w-4" /> Closet
       </button>
 
       {isLoading || !item ? (
-        <div className="mt-6 aspect-square animate-pulse rounded-3xl bg-muted" />
+        <div className="mt-6 aspect-square animate-pulse rounded-3xl border-[1.5px] border-ink/20 bg-muted" />
       ) : (
         <>
-          <div className="mt-4 overflow-hidden rounded-3xl border border-border bg-card">
-            <div className="aspect-square bg-muted">
+          <div className="card-pop mt-4 overflow-hidden" style={{ background: "var(--pink-soft)" }}>
+            <div className="aspect-square">
               <img
                 src={item.cutout_url ?? item.image_url}
                 alt={item.name ?? ""}
@@ -64,16 +64,20 @@ function ItemPage() {
               />
             </div>
           </div>
-          <div className="mt-5">
-            <h1 className="display text-3xl text-foreground">{item.name}</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {item.color} · {item.category}
-            </p>
+          <div className="mt-6 flex items-start justify-between gap-4">
+            <div>
+              <h1 className="display text-3xl text-foreground">{item.name}</h1>
+              <p className="mt-1 text-sm font-medium text-muted-foreground">
+                {item.color} · {item.category}
+              </p>
+            </div>
+            <span className="sticker rotate-3" style={{ background: "var(--sun)" }}>in closet</span>
           </div>
 
           <button
             onClick={onDelete}
-            className="mt-8 w-full inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card py-4 text-sm font-medium text-destructive active:opacity-90"
+            className="btn-pop mt-8 w-full py-4 text-sm text-destructive"
+            data-tone="paper"
           >
             <Trash2 className="h-4 w-4" /> Delete
           </button>

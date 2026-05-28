@@ -136,26 +136,35 @@ function AddClothingPage() {
   }
 
   return (
-    <div className="px-5 pt-10 pb-6">
+    <div className="px-5 pt-10 pb-32">
       <button
         onClick={() => navigate({ to: "/closet" })}
-        className="-ml-2 inline-flex items-center gap-1 text-sm text-muted-foreground"
+        className="-ml-2 inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground hover:text-ink"
       >
         <ChevronLeft className="h-4 w-4" /> Closet
       </button>
 
-      <h1 className="display mt-3 text-3xl text-foreground">
-        Scan a <em className="italic text-tomato">piece</em>
-      </h1>
+      <div className="mt-3">
+        <span className="sticker -rotate-2" style={{ background: "var(--mint)" }}>scan a piece</span>
+        <h1 className="display mt-3 text-[2.4rem] text-foreground">
+          Add a{" "}
+          <span className="inline-block rotate-1 rounded-xl border-[1.5px] border-ink px-2" style={{ background: "var(--sun)" }}>
+            new fit
+          </span>
+        </h1>
+      </div>
 
       {stage === "pick" && (
         <div className="mt-8">
           <button
             onClick={() => fileRef.current?.click()}
-            className="flex aspect-[3/4] w-full flex-col items-center justify-center rounded-3xl border-2 border-dashed border-border bg-card text-foreground active:scale-[0.99] transition-transform"
+            className="card-pop flex aspect-[3/4] w-full flex-col items-center justify-center text-foreground active:translate-x-[2px] active:translate-y-[2px]"
+            style={{ background: "var(--pink-soft)" }}
           >
-            <Camera className="h-9 w-9" strokeWidth={1.5} />
-            <p className="mt-4 text-base font-medium">Use camera</p>
+            <div className="inline-flex h-16 w-16 items-center justify-center rounded-full border-[1.5px] border-ink" style={{ background: "var(--pink)" }}>
+              <Camera className="h-7 w-7" strokeWidth={2} />
+            </div>
+            <p className="mt-5 text-lg font-bold">Use camera</p>
             <p className="mt-1 text-xs text-muted-foreground">or pick from photos</p>
           </button>
           <input
@@ -170,7 +179,7 @@ function AddClothingPage() {
             }}
           />
           <p className="mt-4 text-center text-xs text-muted-foreground">
-            Lay the piece flat on a plain surface for best results.
+            Lay the piece flat on a plain surface — looks chef's kiss.
           </p>
         </div>
       )}
@@ -184,40 +193,32 @@ function AddClothingPage() {
           {imageUrl ? (
             <img
               src={imageUrl}
-              className="h-48 w-48 rounded-3xl object-cover opacity-70"
+              className="h-52 w-52 rounded-3xl border-[1.5px] border-ink object-cover shadow-[4px_4px_0_0_var(--ink)]"
               alt=""
             />
           ) : (
-            <div className="h-48 w-48 animate-pulse rounded-3xl bg-muted" />
+            <div className="h-52 w-52 animate-pulse rounded-3xl border-[1.5px] border-ink bg-muted" />
           )}
-          <div className="mt-6 inline-flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-ink">
             <Loader2 className="h-4 w-4 animate-spin" />
-            {stage === "uploading" ? "Uploading…" : "Tagging & removing background…"}
+            {stage === "uploading" ? "Uploading…" : "Tagging & cutting background…"}
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
             <Sparkles className="mr-1 inline h-3 w-3" />
-            This usually takes a few seconds.
+            Hang tight — usually a few seconds.
           </p>
         </motion.div>
       )}
 
       {(stage === "review" || stage === "saving") && imageUrl && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-8"
-        >
-          <div className="overflow-hidden rounded-3xl border border-border bg-card">
-            <div className="aspect-square bg-muted">
-              <img
-                src={cutoutUrl ?? imageUrl}
-                alt=""
-                className="h-full w-full object-cover"
-              />
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
+          <div className="card-pop overflow-hidden" style={{ background: "var(--mint-soft)" }}>
+            <div className="aspect-square">
+              <img src={cutoutUrl ?? imageUrl} alt="" className="h-full w-full object-cover" />
             </div>
-            <div className="px-4 py-3">
-              <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                {cutoutUrl ? "Background removed" : "Original photo"}
+            <div className="border-t-[1.5px] border-ink bg-card px-4 py-2.5">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {cutoutUrl ? "✦ background removed" : "Original photo"}
               </p>
             </div>
           </div>
@@ -228,7 +229,7 @@ function AddClothingPage() {
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 placeholder="e.g. White linen shirt"
-                className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-tomato"
+                className="w-full rounded-2xl border-[1.5px] border-ink bg-card px-4 py-3 text-[15px] font-medium focus:outline-none focus:ring-2 focus:ring-pink"
               />
             </Field>
             <Field label="Color">
@@ -236,7 +237,7 @@ function AddClothingPage() {
                 value={form.color}
                 onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))}
                 placeholder="e.g. cream"
-                className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-tomato"
+                className="w-full rounded-2xl border-[1.5px] border-ink bg-card px-4 py-3 text-[15px] font-medium focus:outline-none focus:ring-2 focus:ring-pink"
               />
             </Field>
             <Field label="Category">
@@ -259,7 +260,8 @@ function AddClothingPage() {
           <button
             disabled={stage === "saving"}
             onClick={save}
-            className="mt-8 w-full rounded-full bg-foreground py-4 text-base font-medium text-background disabled:opacity-50 active:opacity-90"
+            className="btn-pop mt-8 w-full py-4 text-base disabled:opacity-60"
+            data-tone="pink"
           >
             {stage === "saving" ? "Saving…" : "Add to closet ✦"}
           </button>
@@ -272,7 +274,7 @@ function AddClothingPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+      <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
         {label}
       </span>
       {children}

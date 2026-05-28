@@ -62,13 +62,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "theme-color", content: "#FAF7F2" },
-      { title: "What to Wear Today?" },
+      { title: "What should i wear today?" },
       {
         name: "description",
         content:
           "Scan your clothes, dress a mannequin with AI try-on, and save your favorite looks.",
       },
-      { property: "og:title", content: "What to Wear Today?" },
+      { property: "og:title", content: "What should i wear today?" },
       {
         property: "og:description",
         content:
@@ -76,6 +76,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "What should i wear today?" },
+      { name: "description", content: "Outfit Curator helps users digitally organize their wardrobe and create outfits." },
+      { property: "og:description", content: "Outfit Curator helps users digitally organize their wardrobe and create outfits." },
+      { name: "twitter:description", content: "Outfit Curator helps users digitally organize their wardrobe and create outfits." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f4f7e2e4-9838-4641-9082-fc0e5d0a4254/id-preview-ea854916--86f302ed-3ece-4b23-9fd1-6ec168d002c3.lovable.app-1779972549040.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f4f7e2e4-9838-4641-9082-fc0e5d0a4254/id-preview-ea854916--86f302ed-3ece-4b23-9fd1-6ec168d002c3.lovable.app-1779972549040.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

@@ -157,24 +157,49 @@ function AddClothingPage() {
       {stage === "pick" && (
         <div className="mt-8">
           <button
-            onClick={() => fileRef.current?.click()}
+            type="button"
+            onClick={() => cameraRef.current?.click()}
             className="card-pop flex aspect-[3/4] w-full flex-col items-center justify-center text-foreground active:translate-x-[2px] active:translate-y-[2px]"
             style={{ background: "var(--pink-soft)" }}
           >
             <div className="inline-flex h-16 w-16 items-center justify-center rounded-full border-[1.5px] border-ink" style={{ background: "var(--pink)" }}>
               <Camera className="h-7 w-7" strokeWidth={2} />
             </div>
-            <p className="mt-5 text-lg font-bold">Use camera</p>
-            <p className="mt-1 text-xs text-muted-foreground">or pick from photos</p>
+            <p className="mt-5 text-lg font-bold">Take a photo</p>
+            <p className="mt-1 text-xs text-muted-foreground">opens your camera</p>
           </button>
+
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            className="btn-pop mt-4 w-full py-3 text-sm"
+            data-tone="mint"
+          >
+            Choose from photos
+          </button>
+
+          {/* Camera capture (mobile only — desktop browsers ignore `capture`) */}
           <input
-            ref={fileRef}
+            ref={cameraRef}
             type="file"
             accept="image/*"
             capture="environment"
             className="hidden"
             onChange={(e) => {
               const f = e.target.files?.[0];
+              e.target.value = "";
+              if (f) onFile(f);
+            }}
+          />
+          {/* Standard file picker — works on desktop & mobile */}
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              e.target.value = "";
               if (f) onFile(f);
             }}
           />

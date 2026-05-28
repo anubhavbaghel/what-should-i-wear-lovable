@@ -14,7 +14,164 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clothing_items: {
+        Row: {
+          ai_tags: Json
+          category: Database["public"]["Enums"]["clothing_category"]
+          color: string | null
+          created_at: string
+          cutout_url: string | null
+          id: string
+          image_url: string
+          name: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_tags?: Json
+          category: Database["public"]["Enums"]["clothing_category"]
+          color?: string | null
+          created_at?: string
+          cutout_url?: string | null
+          id?: string
+          image_url: string
+          name?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_tags?: Json
+          category?: Database["public"]["Enums"]["clothing_category"]
+          color?: string | null
+          created_at?: string
+          cutout_url?: string | null
+          id?: string
+          image_url?: string
+          name?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      collection_outfits: {
+        Row: {
+          added_at: string
+          collection_id: string
+          outfit_id: string
+        }
+        Insert: {
+          added_at?: string
+          collection_id: string
+          outfit_id: string
+        }
+        Update: {
+          added_at?: string
+          collection_id?: string
+          outfit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_outfits_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_outfits_outfit_id_fkey"
+            columns: ["outfit_id"]
+            isOneToOne: false
+            referencedRelation: "outfits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collections: {
+        Row: {
+          cover_outfit_id: string | null
+          created_at: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          cover_outfit_id?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          cover_outfit_id?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collections_cover_outfit_id_fkey"
+            columns: ["cover_outfit_id"]
+            isOneToOne: false
+            referencedRelation: "outfits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      outfits: {
+        Row: {
+          created_at: string
+          generated_image_url: string | null
+          id: string
+          item_ids: string[]
+          mannequin_preset: Database["public"]["Enums"]["mannequin_preset"]
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          generated_image_url?: string | null
+          id?: string
+          item_ids?: string[]
+          mannequin_preset?: Database["public"]["Enums"]["mannequin_preset"]
+          name?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          generated_image_url?: string | null
+          id?: string
+          item_ids?: string[]
+          mannequin_preset?: Database["public"]["Enums"]["mannequin_preset"]
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          mannequin_preset: Database["public"]["Enums"]["mannequin_preset"]
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          mannequin_preset?: Database["public"]["Enums"]["mannequin_preset"]
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          mannequin_preset?: Database["public"]["Enums"]["mannequin_preset"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +180,23 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      clothing_category:
+        | "top"
+        | "bottom"
+        | "outerwear"
+        | "dress"
+        | "shoes"
+        | "accessory"
+      mannequin_preset:
+        | "neutral_light"
+        | "neutral_medium"
+        | "neutral_dark"
+        | "curvy_light"
+        | "curvy_medium"
+        | "curvy_dark"
+        | "slim_light"
+        | "slim_medium"
+        | "slim_dark"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +323,26 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      clothing_category: [
+        "top",
+        "bottom",
+        "outerwear",
+        "dress",
+        "shoes",
+        "accessory",
+      ],
+      mannequin_preset: [
+        "neutral_light",
+        "neutral_medium",
+        "neutral_dark",
+        "curvy_light",
+        "curvy_medium",
+        "curvy_dark",
+        "slim_light",
+        "slim_medium",
+        "slim_dark",
+      ],
+    },
   },
 } as const

@@ -360,6 +360,42 @@ function AddClothingPage() {
           </button>
         </motion.div>
       )}
+
+      {cameraOpen && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-black">
+          <video
+            ref={videoRef}
+            playsInline
+            muted
+            autoPlay
+            className="flex-1 w-full object-cover"
+          />
+          {cameraStarting && (
+            <div className="absolute inset-0 flex items-center justify-center text-white">
+              <Loader2 className="h-6 w-6 animate-spin" />
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={stopCamera}
+            className="absolute top-4 right-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-ink"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <div className="bg-black px-6 py-6 pb-10 flex items-center justify-center">
+            <button
+              type="button"
+              onClick={snapPhoto}
+              disabled={cameraStarting}
+              className="h-18 w-18 rounded-full border-4 border-white bg-white/20 active:scale-95 transition disabled:opacity-50"
+              style={{ height: 72, width: 72 }}
+              aria-label="Capture photo"
+            >
+              <span className="block h-14 w-14 rounded-full bg-white mx-auto" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

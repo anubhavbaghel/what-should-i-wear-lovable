@@ -225,7 +225,7 @@ function AddClothingPage() {
         <div className="mt-8">
           <button
             type="button"
-            onClick={() => cameraRef.current?.click()}
+            onClick={openCamera}
             className="card-pop flex aspect-[3/4] w-full flex-col items-center justify-center text-foreground active:translate-x-[2px] active:translate-y-[2px]"
             style={{ background: "var(--pink-soft)" }}
           >
@@ -239,9 +239,10 @@ function AddClothingPage() {
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
-            className="btn-pop mt-4 w-full py-3 text-sm"
+            className="btn-pop mt-4 w-full py-3 text-sm inline-flex items-center justify-center gap-2"
             data-tone="mint"
           >
+            <ImageIcon className="h-4 w-4" />
             Choose from photos
           </button>
 

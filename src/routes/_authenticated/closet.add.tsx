@@ -1,10 +1,10 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import { toast } from "sonner";
-import { ChevronLeft, Camera, Loader2, Sparkles } from "lucide-react";
+import { ChevronLeft, Camera, Loader2, Sparkles, X, Image as ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   categorizeClothing,
@@ -37,6 +37,10 @@ function AddClothingPage() {
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [cameraStarting, setCameraStarting] = useState(false);
   const queryClient = useQueryClient();
 
   const removeBg = useServerFn(removeBackground);
@@ -109,6 +113,68 @@ function AddClothingPage() {
     }
   }
 
+  function stopCamera() {
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+    setCameraOpen(false);
+  }
+
+  async function openCamera() {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      // No camera API — fall back to native file picker with capture hint
+      cameraRef.current?.click();
+      return;
+    }
+    setCameraOpen(true);
+    setCameraStarting(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1920 } },
+        audio: false,
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play().catch(() => {});
+      }
+    } catch (e) {
+      console.error(e);
+      const name = (e as { name?: string })?.name;
+      if (name === "NotAllowedError") {
+        toast.error("Camera permission denied. Use 'Choose from photos' instead.");
+      } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
+        toast.error("No camera found. Use 'Choose from photos' instead.");
+      } else {
+        toast.error("Could not open camera. Try uploading a photo instead.");
+      }
+      stopCamera();
+    } finally {
+      setCameraStarting(false);
+    }
+  }
+
+  async function snapPhoto() {
+    const video = videoRef.current;
+    if (!video || !video.videoWidth) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0);
+    const blob: Blob | null = await new Promise((res) => canvas.toBlob(res, "image/jpeg", 0.92));
+    if (!blob) return;
+    const file = new File([blob], `capture-${Date.now()}.jpg`, { type: "image/jpeg" });
+    stopCamera();
+    onFile(file);
+  }
+
+  useEffect(() => {
+    return () => {
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+    };
+  }, []);
+
   async function save() {
     if (!imageUrl) return;
     if (!form.name.trim() || !form.color.trim()) {
@@ -159,7 +225,7 @@ function AddClothingPage() {
         <div className="mt-8">
           <button
             type="button"
-            onClick={() => cameraRef.current?.click()}
+            onClick={openCamera}
             className="card-pop flex aspect-[3/4] w-full flex-col items-center justify-center text-foreground active:translate-x-[2px] active:translate-y-[2px]"
             style={{ background: "var(--pink-soft)" }}
           >
@@ -173,9 +239,10 @@ function AddClothingPage() {
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
-            className="btn-pop mt-4 w-full py-3 text-sm"
+            className="btn-pop mt-4 w-full py-3 text-sm inline-flex items-center justify-center gap-2"
             data-tone="mint"
           >
+            <ImageIcon className="h-4 w-4" />
             Choose from photos
           </button>
 
@@ -292,6 +359,42 @@ function AddClothingPage() {
             {stage === "saving" ? "Saving…" : "Add to closet ✦"}
           </button>
         </motion.div>
+      )}
+
+      {cameraOpen && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-black">
+          <video
+            ref={videoRef}
+            playsInline
+            muted
+            autoPlay
+            className="flex-1 w-full object-cover"
+          />
+          {cameraStarting && (
+            <div className="absolute inset-0 flex items-center justify-center text-white">
+              <Loader2 className="h-6 w-6 animate-spin" />
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={stopCamera}
+            className="absolute top-4 right-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-ink"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <div className="bg-black px-6 py-6 pb-10 flex items-center justify-center">
+            <button
+              type="button"
+              onClick={snapPhoto}
+              disabled={cameraStarting}
+              className="h-18 w-18 rounded-full border-4 border-white bg-white/20 active:scale-95 transition disabled:opacity-50"
+              style={{ height: 72, width: 72 }}
+              aria-label="Capture photo"
+            >
+              <span className="block h-14 w-14 rounded-full bg-white mx-auto" />
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

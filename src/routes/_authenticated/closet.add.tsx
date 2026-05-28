@@ -36,6 +36,7 @@ const CATEGORIES = [
 function AddClothingPage() {
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
 
   const removeBg = useServerFn(removeBackground);

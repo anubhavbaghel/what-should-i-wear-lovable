@@ -5,15 +5,15 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * "What to Wear Today?" — Editorial fashion design system.
- * Warm off-white paper, deep ink, taupe surfaces, single tomato accent.
- * No neon, no glassmorphism. Hairline borders, generous whitespace,
- * serif display + clean grotesque body.
+ * "What to Wear Today?" — Playful, vibrant, premium.
+ * Sorbet palette: cream paper, hot pink, mint, sunny yellow + deep ink.
+ * Outfit (display) + Figtree (body). Bento layouts, sticker chips,
+ * chunky pill buttons, color-block accents. No glassmorphism, no neon.
  */
 
 @theme inline {
-  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Figtree", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -43,65 +43,73 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
+
+  /* Brand color aliases for utility classes (bg-ink, text-pink, etc) */
   --color-ink: var(--ink);
   --color-paper: var(--paper);
-  --color-taupe: var(--taupe);
-  --color-tomato: var(--tomato);
+  --color-pink: var(--pink);
+  --color-mint: var(--mint);
+  --color-sun: var(--sun);
+  --color-grape: var(--grape);
+  --color-tomato: var(--pink); /* legacy alias so old text-tomato keeps working */
 }
 
 :root {
-  --radius: 0.875rem;
+  --radius: 1.125rem;
 
-  /* Brand */
-  --paper: oklch(0.972 0.014 82);          /* #FAF7F2 warm paper */
-  --ink: oklch(0.18 0 0);                  /* #111 deep ink */
-  --taupe: oklch(0.918 0.013 75);          /* soft surface */
-  --tomato: oklch(0.66 0.193 30);          /* #E8533C accent */
-  --tomato-soft: oklch(0.93 0.05 30);
+  /* Sorbet pop palette */
+  --paper: oklch(0.975 0.012 40);          /* #FFF6F1 cream */
+  --ink: oklch(0.16 0.012 280);            /* deep plum-black */
+  --pink: oklch(0.75 0.18 5);              /* #FF7AB6 hot pink */
+  --pink-soft: oklch(0.93 0.06 5);
+  --mint: oklch(0.82 0.14 165);            /* #3DD9B0 mint */
+  --mint-soft: oklch(0.94 0.05 165);
+  --sun: oklch(0.89 0.16 90);              /* #FFD23F sunny yellow */
+  --sun-soft: oklch(0.96 0.06 90);
+  --grape: oklch(0.55 0.18 295);
 
   /* Semantic mapping */
   --background: var(--paper);
   --foreground: var(--ink);
-  --card: oklch(0.985 0.008 82);
+  --card: oklch(1 0 0);                    /* crisp white cards pop on cream */
   --card-foreground: var(--ink);
-  --popover: oklch(0.985 0.008 82);
+  --popover: oklch(1 0 0);
   --popover-foreground: var(--ink);
   --primary: var(--ink);
   --primary-foreground: var(--paper);
-  --secondary: var(--taupe);
+  --secondary: var(--pink-soft);
   --secondary-foreground: var(--ink);
-  --muted: oklch(0.94 0.011 80);
-  --muted-foreground: oklch(0.46 0.012 70);
-  --accent: var(--tomato);
-  --accent-foreground: oklch(0.985 0.008 82);
-  --destructive: oklch(0.55 0.21 28);
-  --destructive-foreground: oklch(0.985 0.008 82);
-  --border: oklch(0.88 0.011 80);
-  --input: oklch(0.88 0.011 80);
-  --ring: oklch(0.66 0.193 30);
+  --muted: oklch(0.955 0.01 40);
+  --muted-foreground: oklch(0.5 0.02 290);
+  --accent: var(--pink);
+  --accent-foreground: var(--ink);
+  --destructive: oklch(0.58 0.22 25);
+  --destructive-foreground: oklch(0.99 0.005 40);
+  --border: oklch(0.92 0.012 40);
+  --input: oklch(0.92 0.012 40);
+  --ring: var(--pink);
 }
 
 .dark {
-  /* Dark mode kept simple; product is mainly light. */
-  --background: oklch(0.16 0.008 80);
-  --foreground: oklch(0.97 0.014 82);
-  --card: oklch(0.20 0.008 80);
-  --card-foreground: oklch(0.97 0.014 82);
-  --popover: oklch(0.20 0.008 80);
-  --popover-foreground: oklch(0.97 0.014 82);
-  --primary: oklch(0.97 0.014 82);
-  --primary-foreground: oklch(0.16 0.008 80);
-  --secondary: oklch(0.28 0.012 80);
-  --secondary-foreground: oklch(0.97 0.014 82);
-  --muted: oklch(0.26 0.012 80);
-  --muted-foreground: oklch(0.72 0.012 70);
-  --accent: oklch(0.7 0.19 30);
-  --accent-foreground: oklch(0.16 0.008 80);
-  --destructive: oklch(0.7 0.19 28);
-  --destructive-foreground: oklch(0.16 0.008 80);
+  --background: oklch(0.18 0.02 290);
+  --foreground: oklch(0.97 0.012 40);
+  --card: oklch(0.22 0.02 290);
+  --card-foreground: oklch(0.97 0.012 40);
+  --popover: oklch(0.22 0.02 290);
+  --popover-foreground: oklch(0.97 0.012 40);
+  --primary: oklch(0.97 0.012 40);
+  --primary-foreground: oklch(0.18 0.02 290);
+  --secondary: oklch(0.3 0.04 320);
+  --secondary-foreground: oklch(0.97 0.012 40);
+  --muted: oklch(0.26 0.02 290);
+  --muted-foreground: oklch(0.72 0.012 40);
+  --accent: var(--pink);
+  --accent-foreground: oklch(0.18 0.02 290);
+  --destructive: oklch(0.7 0.2 25);
+  --destructive-foreground: oklch(0.18 0.02 290);
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.7 0.19 30);
+  --ring: var(--pink);
 }
 
 @layer base {
@@ -118,36 +126,31 @@
     text-rendering: optimizeLegibility;
   }
 
-  h1, h2, h3 {
+  h1, h2, h3, h4 {
     font-family: var(--font-display);
-    font-weight: 400;
-    letter-spacing: -0.01em;
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
 
-  /* Mobile-first: keep app feeling app-like */
   body {
     overscroll-behavior-y: none;
   }
 
   ::selection {
-    background: var(--tomato);
-    color: var(--paper);
+    background: var(--pink);
+    color: var(--ink);
   }
 }
 
 @layer components {
-  .hairline {
-    border-width: 1px;
-    border-color: var(--color-border);
-  }
-
   .display {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
-    line-height: 1;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 0.95;
   }
 
-  /* Hand-drawn underline accent for active tab */
+  /* Chunky pill underline under active tab */
   .underline-accent {
     position: relative;
   }
@@ -155,30 +158,82 @@
     content: "";
     position: absolute;
     left: 50%;
-    bottom: -6px;
-    width: 18px;
-    height: 6px;
+    bottom: -7px;
+    width: 22px;
+    height: 4px;
     transform: translateX(-50%);
-    background: var(--tomato);
+    background: var(--pink);
     border-radius: 999px;
-    opacity: 0.95;
   }
 
-  /* Sticker-style chip */
+  /* Sticker-style chip — soft shadow, chunky pill */
   .chip {
     display: inline-flex;
     align-items: center;
     gap: 0.375rem;
-    padding: 0.375rem 0.75rem;
+    padding: 0.5rem 0.95rem;
     border-radius: 999px;
-    border: 1px solid var(--color-border);
+    border: 1.5px solid var(--ink);
     background: var(--card);
-    font-size: 0.8rem;
-    font-weight: 500;
+    color: var(--ink);
+    font-size: 0.82rem;
+    font-weight: 600;
+    box-shadow: 2px 2px 0 0 var(--ink);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  }
+  .chip:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 0 var(--ink);
   }
   .chip[data-active="true"] {
+    background: var(--pink);
+    color: var(--ink);
+  }
+
+  /* Card with chunky offset shadow — premium-playful */
+  .card-pop {
+    background: var(--card);
+    border: 1.5px solid var(--ink);
+    border-radius: 1.5rem;
+    box-shadow: 4px 4px 0 0 var(--ink);
+  }
+
+  /* Big juicy pill button */
+  .btn-pop {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--ink);
     background: var(--ink);
     color: var(--paper);
-    border-color: var(--ink);
+    font-weight: 600;
+    box-shadow: 4px 4px 0 0 var(--ink);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .btn-pop:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 0 var(--ink);
+  }
+  .btn-pop[data-tone="pink"] { background: var(--pink); color: var(--ink); }
+  .btn-pop[data-tone="mint"] { background: var(--mint); color: var(--ink); }
+  .btn-pop[data-tone="sun"]  { background: var(--sun);  color: var(--ink); }
+  .btn-pop[data-tone="paper"] { background: var(--card); color: var(--ink); }
+
+  /* Sticker tag — small rotated label */
+  .sticker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--ink);
+    background: var(--sun);
+    color: var(--ink);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
 }

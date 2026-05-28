@@ -13,20 +13,24 @@ export const Route = createFileRoute("/_authenticated/style")({
 
 function StylePage() {
   return (
-    <div className="px-5 pt-12 pb-6">
+    <div className="px-5 pt-10 pb-32">
       <header>
-        <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Try on</p>
-        <h1 className="display mt-1 text-4xl text-foreground">
-          Style a <em className="italic text-tomato">look</em>
+        <span className="sticker -rotate-2" style={{ background: "var(--sun)" }}>try on</span>
+        <h1 className="display mt-3 text-[2.4rem] text-foreground">
+          Style a{" "}
+          <span className="inline-block rotate-1 rounded-xl border-[1.5px] border-ink px-2" style={{ background: "var(--sun)" }}>
+            look
+          </span>
         </h1>
       </header>
 
-      <div className="mt-10 rounded-3xl border border-dashed border-border bg-card px-6 py-16 text-center">
-        <Sparkles className="mx-auto h-7 w-7 text-foreground" strokeWidth={1.6} />
-        <h2 className="display mt-4 text-2xl text-foreground">Coming next</h2>
+      <div className="card-pop mt-10 px-6 py-14 text-center" style={{ background: "var(--pink-soft)" }}>
+        <div className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-full border-[1.5px] border-ink" style={{ background: "var(--sun)" }}>
+          <Sparkles className="h-5 w-5" strokeWidth={2.4} />
+        </div>
+        <h2 className="display mt-5 text-2xl text-foreground">Coming next</h2>
         <p className="mx-auto mt-2 max-w-[28ch] text-sm text-muted-foreground">
-          Pick pieces from your closet, drop them on a stylized mannequin, and we'll generate the
-          look.
+          Pick pieces from your closet, drop them on a stylized mannequin, and we'll generate the look.
         </p>
       </div>
     </div>

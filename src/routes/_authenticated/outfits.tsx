@@ -13,19 +13,24 @@ export const Route = createFileRoute("/_authenticated/outfits")({
 
 function OutfitsPage() {
   return (
-    <div className="px-5 pt-12 pb-6">
+    <div className="px-5 pt-10 pb-32">
       <header>
-        <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Saved looks</p>
-        <h1 className="display mt-1 text-4xl text-foreground">
-          Your <em className="italic text-tomato">outfits</em>
+        <span className="sticker -rotate-2" style={{ background: "var(--mint)" }}>saved looks</span>
+        <h1 className="display mt-3 text-[2.4rem] text-foreground">
+          Your{" "}
+          <span className="inline-block -rotate-1 rounded-xl border-[1.5px] border-ink px-2" style={{ background: "var(--mint)" }}>
+            outfits
+          </span>
         </h1>
       </header>
 
-      <div className="mt-10 rounded-3xl border border-dashed border-border bg-card px-6 py-16 text-center">
-        <Heart className="mx-auto h-7 w-7 text-foreground" strokeWidth={1.6} />
-        <h2 className="display mt-4 text-2xl text-foreground">No outfits yet</h2>
+      <div className="card-pop mt-10 px-6 py-14 text-center" style={{ background: "var(--sun-soft)" }}>
+        <div className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-full border-[1.5px] border-ink" style={{ background: "var(--pink)" }}>
+          <Heart className="h-5 w-5" strokeWidth={2.4} fill="currentColor" />
+        </div>
+        <h2 className="display mt-5 text-2xl text-foreground">No outfits yet</h2>
         <p className="mx-auto mt-2 max-w-[28ch] text-sm text-muted-foreground">
-          Style a look in the Style tab — save the ones you'll actually wear.
+          Hop into Style, mix some pieces, and save the looks you'll actually wear.
         </p>
       </div>
     </div>

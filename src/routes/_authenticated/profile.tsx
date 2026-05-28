@@ -40,34 +40,37 @@ function ProfilePage() {
   }
 
   return (
-    <div className="px-5 pt-12 pb-6">
+    <div className="px-5 pt-10 pb-32">
       <header>
-        <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Account</p>
-        <h1 className="display mt-1 text-4xl text-foreground">
-          Your <em className="italic text-tomato">profile</em>
+        <span className="sticker -rotate-2">account</span>
+        <h1 className="display mt-3 text-[2.4rem] text-foreground">
+          Your{" "}
+          <span className="inline-block -rotate-1 rounded-xl border-[1.5px] border-ink px-2" style={{ background: "var(--pink)" }}>
+            profile
+          </span>
         </h1>
       </header>
 
-      <section className="mt-8 flex items-center gap-4 rounded-3xl border border-border bg-card p-5">
-        <div className="h-14 w-14 overflow-hidden rounded-full bg-muted">
+      <section
+        className="card-pop mt-8 flex items-center gap-4 p-5"
+        style={{ background: "var(--mint-soft)" }}
+      >
+        <div className="h-14 w-14 overflow-hidden rounded-full border-[1.5px] border-ink bg-card">
           {user?.avatar ? (
             <img src={user.avatar} alt="" className="h-full w-full object-cover" />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-lg font-medium text-muted-foreground">
-              {user?.name?.[0]?.toUpperCase() ?? user?.email?.[0]?.toUpperCase() ?? "·"}
+            <div className="flex h-full w-full items-center justify-center text-lg font-bold">
+              {user?.name?.[0]?.toUpperCase() ?? user?.email?.[0]?.toUpperCase() ?? "✦"}
             </div>
           )}
         </div>
         <div className="min-w-0">
-          <p className="truncate font-medium text-foreground">{user?.name ?? "Stylish you"}</p>
+          <p className="truncate font-semibold text-foreground">{user?.name ?? "Stylish you"}</p>
           <p className="truncate text-sm text-muted-foreground">{user?.email ?? ""}</p>
         </div>
       </section>
 
-      <button
-        onClick={signOut}
-        className="mt-6 w-full inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card py-4 text-sm font-medium text-foreground active:opacity-90"
-      >
+      <button onClick={signOut} className="btn-pop mt-6 w-full py-4 text-sm" data-tone="paper">
         <LogOut className="h-4 w-4" /> Sign out
       </button>
 

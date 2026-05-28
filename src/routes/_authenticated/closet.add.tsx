@@ -37,6 +37,10 @@ function AddClothingPage() {
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [cameraStarting, setCameraStarting] = useState(false);
   const queryClient = useQueryClient();
 
   const removeBg = useServerFn(removeBackground);

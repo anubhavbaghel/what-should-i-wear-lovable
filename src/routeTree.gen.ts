@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedStyleRouteImport } from './routes/_authenticated/style'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedOutfitsRouteImport } from './routes/_authenticated/outfits'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedClosetRouteImport } from './routes/_authenticated/closet'
 import { Route as AuthenticatedOutfitsOutfitIdRouteImport } from './routes/_authenticated/outfits.$outfitId'
 import { Route as AuthenticatedClosetAddRouteImport } from './routes/_authenticated/closet.add'
@@ -49,6 +50,11 @@ const AuthenticatedOutfitsRoute = AuthenticatedOutfitsRouteImport.update({
   path: '/outfits',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedClosetRoute = AuthenticatedClosetRouteImport.update({
   id: '/closet',
   path: '/closet',
@@ -76,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/closet': typeof AuthenticatedClosetRouteWithChildren
+  '/onboarding': typeof AuthenticatedOnboardingRoute
   '/outfits': typeof AuthenticatedOutfitsRouteWithChildren
   '/profile': typeof AuthenticatedProfileRoute
   '/style': typeof AuthenticatedStyleRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/closet': typeof AuthenticatedClosetRouteWithChildren
+  '/onboarding': typeof AuthenticatedOnboardingRoute
   '/outfits': typeof AuthenticatedOutfitsRouteWithChildren
   '/profile': typeof AuthenticatedProfileRoute
   '/style': typeof AuthenticatedStyleRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/closet': typeof AuthenticatedClosetRouteWithChildren
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/outfits': typeof AuthenticatedOutfitsRouteWithChildren
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/style': typeof AuthenticatedStyleRoute
@@ -113,6 +122,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/closet'
+    | '/onboarding'
     | '/outfits'
     | '/profile'
     | '/style'
@@ -124,6 +134,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/closet'
+    | '/onboarding'
     | '/outfits'
     | '/profile'
     | '/style'
@@ -136,6 +147,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/login'
     | '/_authenticated/closet'
+    | '/_authenticated/onboarding'
     | '/_authenticated/outfits'
     | '/_authenticated/profile'
     | '/_authenticated/style'
@@ -192,6 +204,13 @@ declare module '@tanstack/react-router' {
       path: '/outfits'
       fullPath: '/outfits'
       preLoaderRoute: typeof AuthenticatedOutfitsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/closet': {
@@ -251,6 +270,7 @@ const AuthenticatedOutfitsRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedClosetRoute: typeof AuthenticatedClosetRouteWithChildren
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedOutfitsRoute: typeof AuthenticatedOutfitsRouteWithChildren
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedStyleRoute: typeof AuthenticatedStyleRoute
@@ -258,6 +278,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedClosetRoute: AuthenticatedClosetRouteWithChildren,
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedOutfitsRoute: AuthenticatedOutfitsRouteWithChildren,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedStyleRoute: AuthenticatedStyleRoute,
@@ -275,3 +296,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

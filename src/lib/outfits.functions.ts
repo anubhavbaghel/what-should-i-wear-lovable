@@ -257,7 +257,11 @@ export const completeOnboarding = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const patch: Record<string, unknown> = {
+    const patch: {
+      mannequin_preset: typeof data.preset;
+      onboarded_at: string;
+      display_name?: string;
+    } = {
       mannequin_preset: data.preset,
       onboarded_at: new Date().toISOString(),
     };

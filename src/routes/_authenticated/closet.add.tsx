@@ -113,6 +113,68 @@ function AddClothingPage() {
     }
   }
 
+  function stopCamera() {
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+    setCameraOpen(false);
+  }
+
+  async function openCamera() {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      // No camera API — fall back to native file picker with capture hint
+      cameraRef.current?.click();
+      return;
+    }
+    setCameraOpen(true);
+    setCameraStarting(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1920 } },
+        audio: false,
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play().catch(() => {});
+      }
+    } catch (e) {
+      console.error(e);
+      const name = (e as { name?: string })?.name;
+      if (name === "NotAllowedError") {
+        toast.error("Camera permission denied. Use 'Choose from photos' instead.");
+      } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
+        toast.error("No camera found. Use 'Choose from photos' instead.");
+      } else {
+        toast.error("Could not open camera. Try uploading a photo instead.");
+      }
+      stopCamera();
+    } finally {
+      setCameraStarting(false);
+    }
+  }
+
+  async function snapPhoto() {
+    const video = videoRef.current;
+    if (!video || !video.videoWidth) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0);
+    const blob: Blob | null = await new Promise((res) => canvas.toBlob(res, "image/jpeg", 0.92));
+    if (!blob) return;
+    const file = new File([blob], `capture-${Date.now()}.jpg`, { type: "image/jpeg" });
+    stopCamera();
+    onFile(file);
+  }
+
+  useEffect(() => {
+    return () => {
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+    };
+  }, []);
+
   async function save() {
     if (!imageUrl) return;
     if (!form.name.trim() || !form.color.trim()) {

@@ -9,38 +9,113 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedStyleRouteImport } from './routes/_authenticated/style'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedOutfitsRouteImport } from './routes/_authenticated/outfits'
+import { Route as AuthenticatedClosetRouteImport } from './routes/_authenticated/closet'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedStyleRoute = AuthenticatedStyleRouteImport.update({
+  id: '/style',
+  path: '/style',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedOutfitsRoute = AuthenticatedOutfitsRouteImport.update({
+  id: '/outfits',
+  path: '/outfits',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedClosetRoute = AuthenticatedClosetRouteImport.update({
+  id: '/closet',
+  path: '/closet',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/closet': typeof AuthenticatedClosetRoute
+  '/outfits': typeof AuthenticatedOutfitsRoute
+  '/profile': typeof AuthenticatedProfileRoute
+  '/style': typeof AuthenticatedStyleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/closet': typeof AuthenticatedClosetRoute
+  '/outfits': typeof AuthenticatedOutfitsRoute
+  '/profile': typeof AuthenticatedProfileRoute
+  '/style': typeof AuthenticatedStyleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_authenticated/closet': typeof AuthenticatedClosetRoute
+  '/_authenticated/outfits': typeof AuthenticatedOutfitsRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/style': typeof AuthenticatedStyleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/login' | '/closet' | '/outfits' | '/profile' | '/style'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/login' | '/closet' | '/outfits' | '/profile' | '/style'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/login'
+    | '/_authenticated/closet'
+    | '/_authenticated/outfits'
+    | '/_authenticated/profile'
+    | '/_authenticated/style'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,12 +123,70 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/style': {
+      id: '/_authenticated/style'
+      path: '/style'
+      fullPath: '/style'
+      preLoaderRoute: typeof AuthenticatedStyleRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/outfits': {
+      id: '/_authenticated/outfits'
+      path: '/outfits'
+      fullPath: '/outfits'
+      preLoaderRoute: typeof AuthenticatedOutfitsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/closet': {
+      id: '/_authenticated/closet'
+      path: '/closet'
+      fullPath: '/closet'
+      preLoaderRoute: typeof AuthenticatedClosetRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedClosetRoute: typeof AuthenticatedClosetRoute
+  AuthenticatedOutfitsRoute: typeof AuthenticatedOutfitsRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedStyleRoute: typeof AuthenticatedStyleRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedClosetRoute: AuthenticatedClosetRoute,
+  AuthenticatedOutfitsRoute: AuthenticatedOutfitsRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedStyleRoute: AuthenticatedStyleRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

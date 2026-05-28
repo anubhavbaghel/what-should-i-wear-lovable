@@ -16,6 +16,7 @@ import { Route as AuthenticatedStyleRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedOutfitsRouteImport } from './routes/_authenticated/outfits'
 import { Route as AuthenticatedClosetRouteImport } from './routes/_authenticated/closet'
+import { Route as AuthenticatedOutfitsOutfitIdRouteImport } from './routes/_authenticated/outfits.$outfitId'
 import { Route as AuthenticatedClosetAddRouteImport } from './routes/_authenticated/closet.add'
 import { Route as AuthenticatedClosetItemIdRouteImport } from './routes/_authenticated/closet.$itemId'
 
@@ -53,6 +54,12 @@ const AuthenticatedClosetRoute = AuthenticatedClosetRouteImport.update({
   path: '/closet',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedOutfitsOutfitIdRoute =
+  AuthenticatedOutfitsOutfitIdRouteImport.update({
+    id: '/$outfitId',
+    path: '/$outfitId',
+    getParentRoute: () => AuthenticatedOutfitsRoute,
+  } as any)
 const AuthenticatedClosetAddRoute = AuthenticatedClosetAddRouteImport.update({
   id: '/add',
   path: '/add',
@@ -69,21 +76,23 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/closet': typeof AuthenticatedClosetRouteWithChildren
-  '/outfits': typeof AuthenticatedOutfitsRoute
+  '/outfits': typeof AuthenticatedOutfitsRouteWithChildren
   '/profile': typeof AuthenticatedProfileRoute
   '/style': typeof AuthenticatedStyleRoute
   '/closet/$itemId': typeof AuthenticatedClosetItemIdRoute
   '/closet/add': typeof AuthenticatedClosetAddRoute
+  '/outfits/$outfitId': typeof AuthenticatedOutfitsOutfitIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/closet': typeof AuthenticatedClosetRouteWithChildren
-  '/outfits': typeof AuthenticatedOutfitsRoute
+  '/outfits': typeof AuthenticatedOutfitsRouteWithChildren
   '/profile': typeof AuthenticatedProfileRoute
   '/style': typeof AuthenticatedStyleRoute
   '/closet/$itemId': typeof AuthenticatedClosetItemIdRoute
   '/closet/add': typeof AuthenticatedClosetAddRoute
+  '/outfits/$outfitId': typeof AuthenticatedOutfitsOutfitIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -91,11 +100,12 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/closet': typeof AuthenticatedClosetRouteWithChildren
-  '/_authenticated/outfits': typeof AuthenticatedOutfitsRoute
+  '/_authenticated/outfits': typeof AuthenticatedOutfitsRouteWithChildren
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/style': typeof AuthenticatedStyleRoute
   '/_authenticated/closet/$itemId': typeof AuthenticatedClosetItemIdRoute
   '/_authenticated/closet/add': typeof AuthenticatedClosetAddRoute
+  '/_authenticated/outfits/$outfitId': typeof AuthenticatedOutfitsOutfitIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/style'
     | '/closet/$itemId'
     | '/closet/add'
+    | '/outfits/$outfitId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/style'
     | '/closet/$itemId'
     | '/closet/add'
+    | '/outfits/$outfitId'
   id:
     | '__root__'
     | '/'
@@ -129,6 +141,7 @@ export interface FileRouteTypes {
     | '/_authenticated/style'
     | '/_authenticated/closet/$itemId'
     | '/_authenticated/closet/add'
+    | '/_authenticated/outfits/$outfitId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -188,6 +201,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClosetRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/outfits/$outfitId': {
+      id: '/_authenticated/outfits/$outfitId'
+      path: '/$outfitId'
+      fullPath: '/outfits/$outfitId'
+      preLoaderRoute: typeof AuthenticatedOutfitsOutfitIdRouteImport
+      parentRoute: typeof AuthenticatedOutfitsRoute
+    }
     '/_authenticated/closet/add': {
       id: '/_authenticated/closet/add'
       path: '/add'
@@ -218,16 +238,27 @@ const AuthenticatedClosetRouteChildren: AuthenticatedClosetRouteChildren = {
 const AuthenticatedClosetRouteWithChildren =
   AuthenticatedClosetRoute._addFileChildren(AuthenticatedClosetRouteChildren)
 
+interface AuthenticatedOutfitsRouteChildren {
+  AuthenticatedOutfitsOutfitIdRoute: typeof AuthenticatedOutfitsOutfitIdRoute
+}
+
+const AuthenticatedOutfitsRouteChildren: AuthenticatedOutfitsRouteChildren = {
+  AuthenticatedOutfitsOutfitIdRoute: AuthenticatedOutfitsOutfitIdRoute,
+}
+
+const AuthenticatedOutfitsRouteWithChildren =
+  AuthenticatedOutfitsRoute._addFileChildren(AuthenticatedOutfitsRouteChildren)
+
 interface AuthenticatedRouteChildren {
   AuthenticatedClosetRoute: typeof AuthenticatedClosetRouteWithChildren
-  AuthenticatedOutfitsRoute: typeof AuthenticatedOutfitsRoute
+  AuthenticatedOutfitsRoute: typeof AuthenticatedOutfitsRouteWithChildren
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedStyleRoute: typeof AuthenticatedStyleRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedClosetRoute: AuthenticatedClosetRouteWithChildren,
-  AuthenticatedOutfitsRoute: AuthenticatedOutfitsRoute,
+  AuthenticatedOutfitsRoute: AuthenticatedOutfitsRouteWithChildren,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedStyleRoute: AuthenticatedStyleRoute,
 }

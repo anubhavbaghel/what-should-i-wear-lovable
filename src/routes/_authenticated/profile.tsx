@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut } from "lucide-react";
+import { getProfile, updateMannequinPreset } from "@/lib/outfits.functions";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
@@ -14,9 +17,31 @@ export const Route = createFileRoute("/_authenticated/profile")({
   component: ProfilePage,
 });
 
+const PRESETS = [
+  { id: "slim_light", label: "Slim · Light" },
+  { id: "slim_medium", label: "Slim · Medium" },
+  { id: "slim_dark", label: "Slim · Deep" },
+  { id: "neutral_light", label: "Avg · Light" },
+  { id: "neutral_medium", label: "Avg · Medium" },
+  { id: "neutral_dark", label: "Avg · Deep" },
+  { id: "curvy_light", label: "Curvy · Light" },
+  { id: "curvy_medium", label: "Curvy · Medium" },
+  { id: "curvy_dark", label: "Curvy · Deep" },
+] as const;
+
+type Preset = (typeof PRESETS)[number]["id"];
+
 function ProfilePage() {
   const navigate = useNavigate();
+  const qc = useQueryClient();
+  const fetchProfile = useServerFn(getProfile);
+  const setPresetFn = useServerFn(updateMannequinPreset);
+
   const [user, setUser] = useState<{ email: string | null; name: string | null; avatar: string | null } | null>(null);
+  const { data: profileData } = useQuery({
+    queryKey: ["profile"],
+    queryFn: () => fetchProfile(),
+  });
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -32,6 +57,18 @@ function ProfilePage() {
       });
     });
   }, []);
+
+  const currentPreset = (profileData?.profile?.mannequin_preset as Preset | undefined) ?? "neutral_medium";
+
+  async function pickPreset(p: Preset) {
+    try {
+      await setPresetFn({ data: { preset: p } });
+      await qc.invalidateQueries({ queryKey: ["profile"] });
+      toast.success("Figure updated");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't save.");
+    }
+  }
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -70,7 +107,27 @@ function ProfilePage() {
         </div>
       </section>
 
-      <button onClick={signOut} className="btn-pop mt-6 w-full py-4 text-sm" data-tone="paper">
+      <section className="mt-8">
+        <h2 className="display text-lg text-foreground">Default figure</h2>
+        <p className="mt-1 text-xs text-muted-foreground">
+          We'll use this as the mannequin for new looks.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {PRESETS.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => pickPreset(p.id)}
+              className="chip"
+              data-active={currentPreset === p.id}
+              type="button"
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <button onClick={signOut} className="btn-pop mt-10 w-full py-4 text-sm" data-tone="paper">
         <LogOut className="h-4 w-4" /> Sign out
       </button>
 

@@ -305,6 +305,37 @@ function AddClothingPage() {
         </div>
       )}
 
+      {stage === "confirm" && captured && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
+          <div className="card-pop overflow-hidden" style={{ background: "var(--sun-soft, var(--sun))" }}>
+            <div className="aspect-[3/4]">
+              <img src={captured.url} alt="Captured clothing photo" className="h-full w-full object-cover" />
+            </div>
+          </div>
+          <p className="mt-4 text-center text-xs text-muted-foreground">
+            Looks good? We'll tag it and cut the background for you.
+          </p>
+          <div className="mt-5 flex gap-3">
+            <button
+              type="button"
+              onClick={retake}
+              className="btn-pop flex-1 py-3.5 text-sm inline-flex items-center justify-center gap-2"
+              data-tone="mint"
+            >
+              <RotateCcw className="h-4 w-4" /> Retake
+            </button>
+            <button
+              type="button"
+              onClick={useCapture}
+              className="btn-pop flex-1 py-3.5 text-sm inline-flex items-center justify-center gap-2"
+              data-tone="pink"
+            >
+              <Check className="h-4 w-4" /> Use photo
+            </button>
+          </div>
+        </motion.div>
+      )}
+
       {(stage === "uploading" || stage === "processing") && (
         <motion.div
           initial={{ opacity: 0 }}

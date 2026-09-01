@@ -441,7 +441,16 @@ function AddClothingPage() {
           >
             <X className="h-5 w-5" />
           </button>
-          <div className="bg-black px-6 py-6 pb-10 flex items-center justify-center">
+          <div className="relative bg-black px-6 py-6 pb-10 flex items-center justify-center">
+            <button
+              type="button"
+              onClick={switchCamera}
+              disabled={cameraStarting}
+              aria-label="Switch camera"
+              className="absolute left-6 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white disabled:opacity-50"
+            >
+              <SwitchCamera className="h-5 w-5" />
+            </button>
             <button
               type="button"
               onClick={snapPhoto}

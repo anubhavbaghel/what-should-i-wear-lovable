@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import { toast } from "sonner";
-import { ChevronLeft, Camera, Loader2, Sparkles, X, Image as ImageIcon } from "lucide-react";
+import { ChevronLeft, Camera, Loader2, Sparkles, X, Image as ImageIcon, SwitchCamera, RotateCcw, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   categorizeClothing,
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/_authenticated/closet/add")({
   component: AddClothingPage,
 });
 
-type Stage = "pick" | "uploading" | "processing" | "review" | "saving";
+type Stage = "pick" | "confirm" | "uploading" | "processing" | "review" | "saving";
 
 const CATEGORIES = [
   { id: "top", label: "Top" },
@@ -41,6 +41,8 @@ function AddClothingPage() {
   const streamRef = useRef<MediaStream | null>(null);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [cameraStarting, setCameraStarting] = useState(false);
+  const [facing, setFacing] = useState<"environment" | "user">("environment");
+  const [captured, setCaptured] = useState<{ file: File; url: string } | null>(null);
   const queryClient = useQueryClient();
 
   const removeBg = useServerFn(removeBackground);

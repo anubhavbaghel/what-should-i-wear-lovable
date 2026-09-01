@@ -121,17 +121,12 @@ function AddClothingPage() {
     setCameraOpen(false);
   }
 
-  async function openCamera() {
-    if (!navigator.mediaDevices?.getUserMedia) {
-      // No camera API — fall back to native file picker with capture hint
-      cameraRef.current?.click();
-      return;
-    }
-    setCameraOpen(true);
+  async function startStream(mode: "environment" | "user") {
     setCameraStarting(true);
     try {
+      streamRef.current?.getTracks().forEach((t) => t.stop());
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1920 } },
+        video: { facingMode: { ideal: mode }, width: { ideal: 1920 }, height: { ideal: 1920 } },
         audio: false,
       });
       streamRef.current = stream;
@@ -139,20 +134,38 @@ function AddClothingPage() {
         videoRef.current.srcObject = stream;
         await videoRef.current.play().catch(() => {});
       }
+      return true;
     } catch (e) {
       console.error(e);
       const name = (e as { name?: string })?.name;
-      if (name === "NotAllowedError") {
+      if (name === "NotAllowedError" || name === "SecurityError") {
         toast.error("Camera permission denied. Use 'Choose from photos' instead.");
       } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
         toast.error("No camera found. Use 'Choose from photos' instead.");
       } else {
         toast.error("Could not open camera. Try uploading a photo instead.");
       }
-      stopCamera();
+      return false;
     } finally {
       setCameraStarting(false);
     }
+  }
+
+  async function openCamera() {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      // No camera API — fall back to native file picker with capture hint
+      cameraRef.current?.click();
+      return;
+    }
+    setCameraOpen(true);
+    const ok = await startStream(facing);
+    if (!ok) stopCamera();
+  }
+
+  async function switchCamera() {
+    const next = facing === "environment" ? "user" : "environment";
+    setFacing(next);
+    await startStream(next);
   }
 
   async function snapPhoto() {
@@ -168,7 +181,20 @@ function AddClothingPage() {
     if (!blob) return;
     const file = new File([blob], `capture-${Date.now()}.jpg`, { type: "image/jpeg" });
     stopCamera();
-    onFile(file);
+    setCaptured({ file, url: URL.createObjectURL(file) });
+    setStage("confirm");
+  }
+
+  function retake() {
+    if (captured) URL.revokeObjectURL(captured.url);
+    setCaptured(null);
+    setStage("pick");
+    openCamera();
+  }
+
+  function useCapture() {
+    if (!captured) return;
+    onFile(captured.file);
   }
 
   useEffect(() => {

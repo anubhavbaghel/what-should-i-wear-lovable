@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import { toast } from "sonner";
-import { ChevronLeft, Camera, Loader2, Sparkles, X, Image as ImageIcon } from "lucide-react";
+import { ChevronLeft, Camera, Loader2, Sparkles, X, Image as ImageIcon, SwitchCamera, RotateCcw, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   categorizeClothing,
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/_authenticated/closet/add")({
   component: AddClothingPage,
 });
 
-type Stage = "pick" | "uploading" | "processing" | "review" | "saving";
+type Stage = "pick" | "confirm" | "uploading" | "processing" | "review" | "saving";
 
 const CATEGORIES = [
   { id: "top", label: "Top" },
@@ -41,6 +41,8 @@ function AddClothingPage() {
   const streamRef = useRef<MediaStream | null>(null);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [cameraStarting, setCameraStarting] = useState(false);
+  const [facing, setFacing] = useState<"environment" | "user">("environment");
+  const [captured, setCaptured] = useState<{ file: File; url: string } | null>(null);
   const queryClient = useQueryClient();
 
   const removeBg = useServerFn(removeBackground);
@@ -119,17 +121,12 @@ function AddClothingPage() {
     setCameraOpen(false);
   }
 
-  async function openCamera() {
-    if (!navigator.mediaDevices?.getUserMedia) {
-      // No camera API — fall back to native file picker with capture hint
-      cameraRef.current?.click();
-      return;
-    }
-    setCameraOpen(true);
+  async function startStream(mode: "environment" | "user") {
     setCameraStarting(true);
     try {
+      streamRef.current?.getTracks().forEach((t) => t.stop());
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1920 } },
+        video: { facingMode: { ideal: mode }, width: { ideal: 1920 }, height: { ideal: 1920 } },
         audio: false,
       });
       streamRef.current = stream;
@@ -137,20 +134,38 @@ function AddClothingPage() {
         videoRef.current.srcObject = stream;
         await videoRef.current.play().catch(() => {});
       }
+      return true;
     } catch (e) {
       console.error(e);
       const name = (e as { name?: string })?.name;
-      if (name === "NotAllowedError") {
+      if (name === "NotAllowedError" || name === "SecurityError") {
         toast.error("Camera permission denied. Use 'Choose from photos' instead.");
       } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
         toast.error("No camera found. Use 'Choose from photos' instead.");
       } else {
         toast.error("Could not open camera. Try uploading a photo instead.");
       }
-      stopCamera();
+      return false;
     } finally {
       setCameraStarting(false);
     }
+  }
+
+  async function openCamera() {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      // No camera API — fall back to native file picker with capture hint
+      cameraRef.current?.click();
+      return;
+    }
+    setCameraOpen(true);
+    const ok = await startStream(facing);
+    if (!ok) stopCamera();
+  }
+
+  async function switchCamera() {
+    const next = facing === "environment" ? "user" : "environment";
+    setFacing(next);
+    await startStream(next);
   }
 
   async function snapPhoto() {
@@ -166,7 +181,20 @@ function AddClothingPage() {
     if (!blob) return;
     const file = new File([blob], `capture-${Date.now()}.jpg`, { type: "image/jpeg" });
     stopCamera();
-    onFile(file);
+    setCaptured({ file, url: URL.createObjectURL(file) });
+    setStage("confirm");
+  }
+
+  function retake() {
+    if (captured) URL.revokeObjectURL(captured.url);
+    setCaptured(null);
+    setStage("pick");
+    openCamera();
+  }
+
+  function useCapture() {
+    if (!captured) return;
+    onFile(captured.file);
   }
 
   useEffect(() => {
@@ -277,6 +305,37 @@ function AddClothingPage() {
         </div>
       )}
 
+      {stage === "confirm" && captured && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
+          <div className="card-pop overflow-hidden" style={{ background: "var(--sun-soft, var(--sun))" }}>
+            <div className="aspect-[3/4]">
+              <img src={captured.url} alt="Captured clothing photo" className="h-full w-full object-cover" />
+            </div>
+          </div>
+          <p className="mt-4 text-center text-xs text-muted-foreground">
+            Looks good? We'll tag it and cut the background for you.
+          </p>
+          <div className="mt-5 flex gap-3">
+            <button
+              type="button"
+              onClick={retake}
+              className="btn-pop flex-1 py-3.5 text-sm inline-flex items-center justify-center gap-2"
+              data-tone="mint"
+            >
+              <RotateCcw className="h-4 w-4" /> Retake
+            </button>
+            <button
+              type="button"
+              onClick={useCapture}
+              className="btn-pop flex-1 py-3.5 text-sm inline-flex items-center justify-center gap-2"
+              data-tone="pink"
+            >
+              <Check className="h-4 w-4" /> Use photo
+            </button>
+          </div>
+        </motion.div>
+      )}
+
       {(stage === "uploading" || stage === "processing") && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -382,7 +441,16 @@ function AddClothingPage() {
           >
             <X className="h-5 w-5" />
           </button>
-          <div className="bg-black px-6 py-6 pb-10 flex items-center justify-center">
+          <div className="relative bg-black px-6 py-6 pb-10 flex items-center justify-center">
+            <button
+              type="button"
+              onClick={switchCamera}
+              disabled={cameraStarting}
+              aria-label="Switch camera"
+              className="absolute left-6 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white disabled:opacity-50"
+            >
+              <SwitchCamera className="h-5 w-5" />
+            </button>
             <button
               type="button"
               onClick={snapPhoto}
